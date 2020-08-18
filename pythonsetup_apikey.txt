@@ -1,0 +1,53 @@
+# For step 1 and 2 -->
+# https://medium.com/programming-kubernetes/building-stuff-with-the-kubernetes-api-1-cc50a3642
+
+#Step 1:
+TOKEN=$(kubectl get secrets \
+    -o jsonpath='{.items[?(@.type=="kubernetes.io/service-account-token")].data.token}' \
+    | base64 --decode)
+
+#Step2: This will be a private end point for API server. Replace it with public end point if needed.
+APISERVER=$(kubectl config view -o \
+    jsonpath='{.clusters[*].cluster.server}')
+
+#Step3:  Create certificate file :
+#https://stackoverflow.com/questions/57158867/having-problem-in-authenticating-kubernetes-python-client
+
+   # Step3-A : Find token name by executing following:
+
+     kubectl get secrets
+     ### RESULT BELOW #####
+     #   NAME                  TYPE                                  DATA   AGE
+     #   default-token-*****   kubernetes.io/service-account-token   3      159d
+
+  # Step3-B : Generate certificate file by running following command:
+
+    kubectl get secrets default-token-****  -n default -o jsonpath='{.data.ca\.crt}' | base64 --decode > ca.crt
+
+# Then reference in test.py for configuration.ssl_ca_cert parameter.
+
+## By default the default service account for default namespace does not have cluster admin permission and so creating deployment using API fails with error.
+
+# To get past this we have to add cluster admin role to default service account as below :
+
+# Link ->> https://stackoverflow.com/questions/47973570/kubernetes-log-user-systemserviceaccountdefaultdefault-cannot-get-services
+ ----
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: fabric8-rbac
+subjects:
+  - kind: ServiceAccount
+    # Reference to upper's `metadata.name`
+    name: default
+    # Reference to upper's `metadata.namespace`
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+
+ ---
+
+# Apply above role update and then default service account will have cluster admin permission
+# Obviously we should add a new service account with appropriate role for better security

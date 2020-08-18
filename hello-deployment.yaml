@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "hello-deployment"
+  namespace: "hello-namespace"
+spec:
+  selector:
+    matchLabels:
+      app: "hellowebapp"
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: "hellowebapp"
+    spec:
+      containers:
+      - image: pchaudhary/hellowebapp
+        imagePullPolicy: Always
+        name: "hellowebapp"
+        ports:
+        - containerPort: 8080

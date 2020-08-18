@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: "hello-ingress"
+  namespace: "hello-namespace"
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/security-groups: sg-01073d3e7a66d78e6
+    #Security GRP associated with ALB to define inbound allowed ip address.
+  labels:
+    app: hello-ingress
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /hello/*
+            backend:
+              serviceName: "hello-service"
+              servicePort: 80
