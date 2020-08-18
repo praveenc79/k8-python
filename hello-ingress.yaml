@@ -14,7 +14,7 @@ spec:
   rules:
     - http:
         paths:
-          - path: /hello/*
+          - path: /abc/*
             backend:
-              serviceName: "hello-service"
+              serviceName: "abc-service"
               servicePort: 80
