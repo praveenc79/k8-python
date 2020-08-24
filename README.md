@@ -11,3 +11,5 @@ This is public repository home of a few python modules on top kubernetes pythin 
 4. The invokation of these scripts can be easily hooked to a CICD tool like Jenkins which can be configured to react to PR against application source, by building that branch into a deployable artifact and then makes above calls to deploy that artifact into kubernetes and expose webapp to internal network using kubernetes service and ingress resource. 
 
 5. Python module also has a function to add a rule so that same ingress can be used to expose new story branch using path based routing.
+
+6. Test commit
